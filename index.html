@@ -43,7 +43,27 @@
     <script>
         const emojiContainer = document.getElementById('emoji-container');
         const zoomedEmoji = document.getElementById('zoomed-emoji');
-        const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚', '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😶‍🌫️', '😏', '😒', '🙄', '😬', '😮‍💨', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '😵‍💫', '🤯', '🤠', '🥳', '🥸', '😎', '🤓', '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰', '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👹', '👺', '👻', '👽', '👾', '🤖'];
+        function getEmojis() {
+            const emojiRanges = [
+                [0x1F600, 0x1F64F], // Emoticons
+                [0x1F300, 0x1F5FF], // Misc Symbols and Pictographs
+                [0x1F680, 0x1F6FF], // Transport and Map
+                [0x2600, 0x26FF],   // Misc symbols
+                [0x2700, 0x27BF],   // Dingbats
+                [0x1F900, 0x1F9FF], // Supplemental Symbols and Pictographs
+                [0x1F1E6, 0x1F1FF]  // Flags
+            ];
+
+            const emojis = [];
+            for (const [start, end] of emojiRanges) {
+                for (let codePoint = start; codePoint <= end; codePoint++) {
+                    emojis.push(String.fromCodePoint(codePoint));
+                }
+            }
+            return emojis;
+        }
+
+        const emojis = getEmojis();
         let size = 20;
         let animationId;
 
