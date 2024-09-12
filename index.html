@@ -8,77 +8,78 @@
         body {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             background-color: #000;
             overflow: hidden;
             font-family: Arial, sans-serif;
         }
-        #emoji {
+        #emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+            padding: 20px;
+        }
+        .emoji {
+            font-size: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .emoji:hover {
+            transform: scale(1.2);
+        }
+        #zoomed-emoji {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             font-size: 20px;
             color: yellow;
-            transition: font-size 0.05s ease-in-out;
-        }
-        #input-container {
-            position: fixed;
-            top: 20px;
-            left: 20px;
             z-index: 1000;
-        }
-        #emoji-input {
-            font-size: 16px;
-            padding: 5px;
-        }
-        #start-button {
-            font-size: 16px;
-            padding: 5px 10px;
-            margin-left: 10px;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <div id="input-container">
-        <input type="text" id="emoji-input" placeholder="Enter an emoji" maxlength="2">
-        <button id="start-button">Start</button>
-    </div>
-    <div id="emoji"></div>
+    <div id="emoji-grid"></div>
+    <div id="zoomed-emoji"></div>
 
     <script>
-        const emojiElement = document.getElementById('emoji');
-        const emojiInput = document.getElementById('emoji-input');
-        const startButton = document.getElementById('start-button');
+        const emojiGrid = document.getElementById('emoji-grid');
+        const zoomedEmoji = document.getElementById('zoomed-emoji');
+        const emojis = ['😀', '😂', '😍', '🤔', '😎', '🙄', '😴', '🤯', '🥳', '🤠', '👻', '👽', '🤖', '🎃', '🌈', '🌟', '🍕', '🍔', '🍦', '🍭'];
         let size = 20;
         let animationId;
 
+        // Populate emoji grid
+        emojis.forEach(emoji => {
+            const emojiElement = document.createElement('div');
+            emojiElement.className = 'emoji';
+            emojiElement.textContent = emoji;
+            emojiElement.addEventListener('click', () => startZoom(emoji));
+            emojiGrid.appendChild(emojiElement);
+        });
+
+        function startZoom(emoji) {
+            cancelAnimationFrame(animationId);
+            zoomedEmoji.textContent = emoji;
+            size = 20;
+            zoomedEmoji.style.fontSize = `${size}px`;
+            animationId = requestAnimationFrame(growEmoji);
+        }
+
         function growEmoji() {
             size *= 1.05;
-            emojiElement.style.fontSize = `${size}px`;
+            zoomedEmoji.style.fontSize = `${size}px`;
             
             if (size < Math.max(window.innerWidth, window.innerHeight)) {
                 animationId = requestAnimationFrame(growEmoji);
+            } else {
+                setTimeout(() => {
+                    zoomedEmoji.style.fontSize = '20px';
+                    cancelAnimationFrame(animationId);
+                }, 500);
             }
         }
-
-        function startAnimation() {
-            const inputEmoji = emojiInput.value.trim();
-            if (inputEmoji) {
-                emojiElement.textContent = inputEmoji;
-                size = 20;
-                emojiElement.style.fontSize = `${size}px`;
-                cancelAnimationFrame(animationId);
-                animationId = requestAnimationFrame(growEmoji);
-            }
-        }
-
-        startButton.addEventListener('click', startAnimation);
-        emojiInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                startAnimation();
-            }
-        });
     </script>
 </body>
 </html>
