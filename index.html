@@ -66,11 +66,12 @@
         }
 
         const emojis = getEmojis();
-        let size = 20;
-        let animationId;
         let isDragging = false;
         let startX, startY;
         let offsetX = 0, offsetY = 0;
+
+        // Object to store multiple animations
+        const animations = {};
 
         function createSpiralLayout() {
             const centerX = window.innerWidth / 2;
@@ -100,11 +101,17 @@
         }
 
         function startZoom(emoji, event) {
-            cancelAnimationFrame(animationId);
-            zoomedEmoji.textContent = emoji;
-            size = 20;
-            zoomedEmoji.style.fontSize = `${size}px`;
-            zoomedEmoji.style.opacity = '1';
+            const animationId = Date.now(); // Generate a unique ID for this animation
+            const zoomedEmojiElement = document.createElement('div');
+            zoomedEmojiElement.className = 'zoomed-emoji';
+            zoomedEmojiElement.textContent = emoji;
+            zoomedEmojiElement.style.position = 'fixed';
+            zoomedEmojiElement.style.fontSize = '20px';
+            zoomedEmojiElement.style.color = 'yellow';
+            zoomedEmojiElement.style.zIndex = '1000';
+            zoomedEmojiElement.style.pointerEvents = 'none';
+            zoomedEmojiElement.style.transition = 'opacity 0.5s ease';
+            document.body.appendChild(zoomedEmojiElement);
             
             const rect = event.target.getBoundingClientRect();
             const startX = rect.left + rect.width / 2;
@@ -119,30 +126,42 @@
             const normalizedDirX = dirX / length;
             const normalizedDirY = dirY / length;
             
-            zoomedEmoji.style.left = `${startX}px`;
-            zoomedEmoji.style.top = `${startY}px`;
+            zoomedEmojiElement.style.left = `${startX}px`;
+            zoomedEmojiElement.style.top = `${startY}px`;
             
-            animationId = requestAnimationFrame(() => growEmoji(startX, startY, normalizedDirX, normalizedDirY));
+            animations[animationId] = {
+                element: zoomedEmojiElement,
+                size: 20,
+                startX,
+                startY,
+                dirX: normalizedDirX,
+                dirY: normalizedDirY
+            };
+            
+            requestAnimationFrame(() => growEmoji(animationId));
         }
 
-        function growEmoji(startX, startY, dirX, dirY) {
-            size *= 1.05; // Decreased from 1.45 to 1.05 for much slower expansion
-            zoomedEmoji.style.fontSize = `${size}px`;
+        function growEmoji(animationId) {
+            const animation = animations[animationId];
+            if (!animation) return;
+
+            animation.size *= 1.05;
+            animation.element.style.fontSize = `${animation.size}px`;
             
-            const distance = size * 0.05; // Decreased from 0.225 to 0.05 to slow down movement
-            const newX = startX + dirX * distance;
-            const newY = startY + dirY * distance;
+            const distance = animation.size * 0.05;
+            const newX = animation.startX + animation.dirX * distance;
+            const newY = animation.startY + animation.dirY * distance;
             
-            zoomedEmoji.style.left = `${newX - size / 2}px`;
-            zoomedEmoji.style.top = `${newY - size / 2}px`;
+            animation.element.style.left = `${newX - animation.size / 2}px`;
+            animation.element.style.top = `${newY - animation.size / 2}px`;
             
-            if (size < Math.max(window.innerWidth, window.innerHeight) * 2) {
-                animationId = requestAnimationFrame(() => growEmoji(newX, newY, dirX, dirY));
+            if (animation.size < Math.max(window.innerWidth, window.innerHeight) * 2) {
+                requestAnimationFrame(() => growEmoji(animationId));
             } else {
-                zoomedEmoji.style.opacity = '0';
+                animation.element.style.opacity = '0';
                 setTimeout(() => {
-                    zoomedEmoji.style.fontSize = '20px';
-                    cancelAnimationFrame(animationId);
+                    document.body.removeChild(animation.element);
+                    delete animations[animationId];
                 }, 500);
             }
         }
