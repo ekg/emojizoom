@@ -12,15 +12,14 @@
             overflow: hidden;
             font-family: Arial, sans-serif;
         }
-        #emoji-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
-            gap: 5px;
-            padding: 10px;
+        #emoji-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
         }
         .emoji {
+            position: absolute;
             font-size: 20px;
-            text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -38,24 +37,36 @@
     </style>
 </head>
 <body>
-    <div id="emoji-grid"></div>
+    <div id="emoji-container"></div>
     <div id="zoomed-emoji"></div>
 
     <script>
-        const emojiGrid = document.getElementById('emoji-grid');
+        const emojiContainer = document.getElementById('emoji-container');
         const zoomedEmoji = document.getElementById('zoomed-emoji');
         const emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '☺️', '😚', '😙', '🥲', '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😶‍🌫️', '😏', '😒', '🙄', '😬', '😮‍💨', '🤥', '😌', '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧', '🥵', '🥶', '🥴', '😵', '😵‍💫', '🤯', '🤠', '🥳', '🥸', '😎', '🤓', '🧐', '😕', '😟', '🙁', '☹️', '😮', '😯', '😲', '😳', '🥺', '😦', '😧', '😨', '😰', '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓', '😩', '😫', '🥱', '😤', '😡', '😠', '🤬', '😈', '👿', '💀', '☠️', '💩', '🤡', '👹', '👺', '👻', '👽', '👾', '🤖'];
         let size = 20;
         let animationId;
 
-        // Populate emoji grid
-        emojis.forEach(emoji => {
-            const emojiElement = document.createElement('div');
-            emojiElement.className = 'emoji';
-            emojiElement.textContent = emoji;
-            emojiElement.addEventListener('click', (event) => startZoom(emoji, event));
-            emojiGrid.appendChild(emojiElement);
-        });
+        function createSpiralLayout() {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const a = 5; // Controls the space between spiral arms
+            const b = 0.3; // Controls how tightly the spiral is wound
+
+            emojis.forEach((emoji, index) => {
+                const angle = 0.1 * index;
+                const x = centerX + (a + b * angle) * Math.cos(angle);
+                const y = centerY + (a + b * angle) * Math.sin(angle);
+
+                const emojiElement = document.createElement('div');
+                emojiElement.className = 'emoji';
+                emojiElement.textContent = emoji;
+                emojiElement.style.left = `${x}px`;
+                emojiElement.style.top = `${y}px`;
+                emojiElement.addEventListener('click', (event) => startZoom(emoji, event));
+                emojiContainer.appendChild(emojiElement);
+            });
+        }
 
         function startZoom(emoji, event) {
             cancelAnimationFrame(animationId);
@@ -89,6 +100,9 @@
                 }, 500);
             }
         }
+
+        createSpiralLayout();
+        window.addEventListener('resize', createSpiralLayout);
     </script>
 </body>
 </html>
