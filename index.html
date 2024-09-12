@@ -28,17 +28,10 @@
     <script>
         const smiley = document.getElementById('smiley');
         let size = 20;
-        const initialSize = 20;
-        const maxSize = Math.max(window.innerWidth, window.innerHeight) * 2;
 
         function growSmiley() {
             size *= 1.05;
             smiley.style.fontSize = `${size}px`;
-
-            if (size >= maxSize) {
-                size = initialSize;
-            }
-
             requestAnimationFrame(growSmiley);
         }
 
