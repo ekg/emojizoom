@@ -83,12 +83,12 @@
         }
 
         function growEmoji() {
-            size *= 1.15; // Increased from 1.05 to 1.15 for faster expansion
+            size *= 1.45; // Increased from 1.15 to 1.45 for much faster expansion
             zoomedEmoji.style.fontSize = `${size}px`;
             
             const rect = zoomedEmoji.getBoundingClientRect();
-            zoomedEmoji.style.left = `${rect.left - (rect.width * 0.075)}px`; // Adjusted for faster growth
-            zoomedEmoji.style.top = `${rect.top - (rect.height * 0.075)}px`; // Adjusted for faster growth
+            zoomedEmoji.style.left = `${rect.left - (rect.width * 0.225)}px`; // Adjusted for much faster growth
+            zoomedEmoji.style.top = `${rect.top - (rect.height * 0.225)}px`; // Adjusted for much faster growth
             
             if (size < Math.max(window.innerWidth, window.innerHeight) * 1.5) {
                 animationId = requestAnimationFrame(growEmoji);
