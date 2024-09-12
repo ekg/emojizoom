@@ -126,10 +126,10 @@
         }
 
         function growEmoji(startX, startY, dirX, dirY) {
-            size *= 1.45; // Increased from 1.15 to 1.45 for much faster expansion
+            size *= 1.05; // Decreased from 1.45 to 1.05 for much slower expansion
             zoomedEmoji.style.fontSize = `${size}px`;
             
-            const distance = size * 0.225; // Adjust this factor to control the speed of movement
+            const distance = size * 0.05; // Decreased from 0.225 to 0.05 to slow down movement
             const newX = startX + dirX * distance;
             const newY = startY + dirY * distance;
             
