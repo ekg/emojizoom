@@ -50,13 +50,16 @@
         function createSpiralLayout() {
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-            const a = 40; // Increased significantly to create more space between spiral arms
-            const b = 3; // Increased significantly to make the spiral wider
+            const spacing = 30; // Distance between emojis
+            const turnRate = 0.5; // Controls how tightly the spiral turns
+
+            emojiContainer.innerHTML = ''; // Clear existing emojis
 
             emojis.forEach((emoji, index) => {
-                const angle = 0.3 * index; // Increased to spread emojis more
-                const x = centerX + (a + b * angle) * Math.cos(angle);
-                const y = centerY + (a + b * angle) * Math.sin(angle);
+                const angle = Math.sqrt(index) * turnRate;
+                const radius = spacing * Math.sqrt(index);
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
 
                 const emojiElement = document.createElement('div');
                 emojiElement.className = 'emoji';
