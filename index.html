@@ -13,9 +13,10 @@
             font-family: Arial, sans-serif;
         }
         #emoji-container {
-            position: relative;
+            position: absolute;
             width: 100vw;
             height: 100vh;
+            cursor: move;
         }
         .emoji {
             position: absolute;
@@ -66,6 +67,8 @@
         const emojis = getEmojis();
         let size = 20;
         let animationId;
+        let isDragging = false;
+        let startX, startY, scrollLeft, scrollTop;
 
         function createSpiralLayout() {
             const centerX = window.innerWidth / 2;
@@ -127,6 +130,37 @@
 
         createSpiralLayout();
         window.addEventListener('resize', createSpiralLayout);
+
+        // Add event listeners for dragging
+        emojiContainer.addEventListener('mousedown', startDragging);
+        emojiContainer.addEventListener('mousemove', drag);
+        emojiContainer.addEventListener('mouseup', stopDragging);
+        emojiContainer.addEventListener('mouseleave', stopDragging);
+
+        function startDragging(e) {
+            if (e.target === emojiContainer) {
+                isDragging = true;
+                startX = e.pageX - emojiContainer.offsetLeft;
+                startY = e.pageY - emojiContainer.offsetTop;
+                scrollLeft = emojiContainer.scrollLeft;
+                scrollTop = emojiContainer.scrollTop;
+            }
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const x = e.pageX - emojiContainer.offsetLeft;
+            const y = e.pageY - emojiContainer.offsetTop;
+            const walkX = (x - startX) * 2;
+            const walkY = (y - startY) * 2;
+            emojiContainer.scrollLeft = scrollLeft - walkX;
+            emojiContainer.scrollTop = scrollTop - walkY;
+        }
+
+        function stopDragging() {
+            isDragging = false;
+        }
     </script>
 </body>
 </html>
