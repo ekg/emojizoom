@@ -107,22 +107,37 @@
             zoomedEmoji.style.opacity = '1';
             
             const rect = event.target.getBoundingClientRect();
-            zoomedEmoji.style.left = `${rect.left}px`;
-            zoomedEmoji.style.top = `${rect.top}px`;
+            const startX = rect.left + rect.width / 2;
+            const startY = rect.top + rect.height / 2;
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
             
-            animationId = requestAnimationFrame(growEmoji);
+            // Calculate direction vector
+            const dirX = centerX - startX;
+            const dirY = centerY - startY;
+            const length = Math.sqrt(dirX * dirX + dirY * dirY);
+            const normalizedDirX = dirX / length;
+            const normalizedDirY = dirY / length;
+            
+            zoomedEmoji.style.left = `${startX}px`;
+            zoomedEmoji.style.top = `${startY}px`;
+            
+            animationId = requestAnimationFrame(() => growEmoji(startX, startY, normalizedDirX, normalizedDirY));
         }
 
-        function growEmoji() {
+        function growEmoji(startX, startY, dirX, dirY) {
             size *= 1.45; // Increased from 1.15 to 1.45 for much faster expansion
             zoomedEmoji.style.fontSize = `${size}px`;
             
-            const rect = zoomedEmoji.getBoundingClientRect();
-            zoomedEmoji.style.left = `${rect.left - (rect.width * 0.225)}px`; // Adjusted for much faster growth
-            zoomedEmoji.style.top = `${rect.top - (rect.height * 0.225)}px`; // Adjusted for much faster growth
+            const distance = size * 0.225; // Adjust this factor to control the speed of movement
+            const newX = startX + dirX * distance;
+            const newY = startY + dirY * distance;
             
-            if (size < Math.max(window.innerWidth, window.innerHeight) * 1.5) {
-                animationId = requestAnimationFrame(growEmoji);
+            zoomedEmoji.style.left = `${newX - size / 2}px`;
+            zoomedEmoji.style.top = `${newY - size / 2}px`;
+            
+            if (size < Math.max(window.innerWidth, window.innerHeight) * 2) {
+                animationId = requestAnimationFrame(() => growEmoji(newX, newY, dirX, dirY));
             } else {
                 zoomedEmoji.style.opacity = '0';
                 setTimeout(() => {
