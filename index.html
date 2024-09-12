@@ -50,11 +50,11 @@
         function createSpiralLayout() {
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-            const a = 20; // Increased to create more space between spiral arms
-            const b = 1; // Increased to make the spiral wider
+            const a = 40; // Increased significantly to create more space between spiral arms
+            const b = 3; // Increased significantly to make the spiral wider
 
             emojis.forEach((emoji, index) => {
-                const angle = 0.2 * index; // Increased to spread emojis more
+                const angle = 0.3 * index; // Increased to spread emojis more
                 const x = centerX + (a + b * angle) * Math.cos(angle);
                 const y = centerY + (a + b * angle) * Math.sin(angle);
 
