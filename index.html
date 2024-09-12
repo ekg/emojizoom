@@ -29,13 +29,11 @@
         }
         #zoomed-emoji {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             font-size: 20px;
             color: yellow;
             z-index: 1000;
             pointer-events: none;
+            transition: opacity 0.5s ease;
         }
     </style>
 </head>
@@ -55,15 +53,21 @@
             const emojiElement = document.createElement('div');
             emojiElement.className = 'emoji';
             emojiElement.textContent = emoji;
-            emojiElement.addEventListener('click', () => startZoom(emoji));
+            emojiElement.addEventListener('click', (event) => startZoom(emoji, event));
             emojiGrid.appendChild(emojiElement);
         });
 
-        function startZoom(emoji) {
+        function startZoom(emoji, event) {
             cancelAnimationFrame(animationId);
             zoomedEmoji.textContent = emoji;
             size = 20;
             zoomedEmoji.style.fontSize = `${size}px`;
+            zoomedEmoji.style.opacity = '1';
+            
+            const rect = event.target.getBoundingClientRect();
+            zoomedEmoji.style.left = `${rect.left}px`;
+            zoomedEmoji.style.top = `${rect.top}px`;
+            
             animationId = requestAnimationFrame(growEmoji);
         }
 
@@ -71,9 +75,14 @@
             size *= 1.05;
             zoomedEmoji.style.fontSize = `${size}px`;
             
-            if (size < Math.max(window.innerWidth, window.innerHeight)) {
+            const rect = zoomedEmoji.getBoundingClientRect();
+            zoomedEmoji.style.left = `${rect.left - (rect.width * 0.025)}px`;
+            zoomedEmoji.style.top = `${rect.top - (rect.height * 0.025)}px`;
+            
+            if (size < Math.max(window.innerWidth, window.innerHeight) * 1.5) {
                 animationId = requestAnimationFrame(growEmoji);
             } else {
+                zoomedEmoji.style.opacity = '0';
                 setTimeout(() => {
                     zoomedEmoji.style.fontSize = '20px';
                     cancelAnimationFrame(animationId);
