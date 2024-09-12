@@ -169,25 +169,48 @@
         createSpiralLayout();
         window.addEventListener('resize', createSpiralLayout);
 
-        // Add event listeners for dragging
+        // Add event listeners for dragging (mouse and touch)
         emojiContainer.addEventListener('mousedown', startDragging);
         emojiContainer.addEventListener('mousemove', drag);
         emojiContainer.addEventListener('mouseup', stopDragging);
         emojiContainer.addEventListener('mouseleave', stopDragging);
+        emojiContainer.addEventListener('touchstart', startDragging);
+        emojiContainer.addEventListener('touchmove', drag);
+        emojiContainer.addEventListener('touchend', stopDragging);
+        emojiContainer.addEventListener('touchcancel', stopDragging);
 
         function startDragging(e) {
-            if (e.target === emojiContainer) {
+            if (e.target === emojiContainer && (e.type === 'mousedown' || (e.type === 'touchstart' && e.touches.length === 2))) {
                 isDragging = true;
-                startX = e.clientX - offsetX;
-                startY = e.clientY - offsetY;
+                if (e.type === 'mousedown') {
+                    startX = e.clientX - offsetX;
+                    startY = e.clientY - offsetY;
+                } else {
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    startX = ((touch1.clientX + touch2.clientX) / 2) - offsetX;
+                    startY = ((touch1.clientY + touch2.clientY) / 2) - offsetY;
+                }
             }
         }
 
         function drag(e) {
             if (!isDragging) return;
             e.preventDefault();
-            offsetX = e.clientX - startX;
-            offsetY = e.clientY - startY;
+            let currentX, currentY;
+            if (e.type === 'mousemove') {
+                currentX = e.clientX;
+                currentY = e.clientY;
+            } else if (e.type === 'touchmove' && e.touches.length === 2) {
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                currentX = (touch1.clientX + touch2.clientX) / 2;
+                currentY = (touch1.clientY + touch2.clientY) / 2;
+            } else {
+                return;
+            }
+            offsetX = currentX - startX;
+            offsetY = currentY - startY;
             updateEmojiPositions();
         }
 
