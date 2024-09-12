@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ominous Smiley Face</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            overflow: hidden;
+        }
+        #smiley {
+            font-size: 20px;
+            color: yellow;
+            transition: font-size 0.05s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="smiley">😊</div>
+
+    <script>
+        const smiley = document.getElementById('smiley');
+        let size = 20;
+        const maxSize = Math.max(window.innerWidth, window.innerHeight);
+
+        function growSmiley() {
+            size *= 1.05;
+            smiley.style.fontSize = `${size}px`;
+
+            if (size < maxSize) {
+                requestAnimationFrame(growSmiley);
+            }
+        }
+
+        // Start the animation after a short delay
+        setTimeout(growSmiley, 1000);
+    </script>
+</body>
+</html>
