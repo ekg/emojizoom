@@ -50,9 +50,9 @@
         function createSpiralLayout() {
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-            const baseSpacing = 40; // Base distance between emojis
-            const growthFactor = 0.1; // Controls how quickly the spiral expands
-            const turnRate = 0.5; // Controls how tightly the spiral turns
+            const baseSpacing = 13; // Reduced from 40 to about one-third
+            const growthFactor = 0.05; // Reduced from 0.1 to slow down expansion
+            const turnRate = 0.5; // Kept the same to maintain the spiral shape
 
             emojiContainer.innerHTML = ''; // Clear existing emojis
 
