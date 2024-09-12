@@ -28,15 +28,18 @@
     <script>
         const smiley = document.getElementById('smiley');
         let size = 20;
-        const maxSize = Math.max(window.innerWidth, window.innerHeight);
+        const initialSize = 20;
+        const maxSize = Math.max(window.innerWidth, window.innerHeight) * 2;
 
         function growSmiley() {
             size *= 1.05;
             smiley.style.fontSize = `${size}px`;
 
-            if (size < maxSize) {
-                requestAnimationFrame(growSmiley);
+            if (size >= maxSize) {
+                size = initialSize;
             }
+
+            requestAnimationFrame(growSmiley);
         }
 
         // Start the animation after a short delay
