@@ -17,6 +17,7 @@
             width: 100vw;
             height: 100vh;
             cursor: move;
+            overflow: visible;
         }
         .emoji {
             position: absolute;
@@ -68,7 +69,8 @@
         let size = 20;
         let animationId;
         let isDragging = false;
-        let startX, startY, scrollLeft, scrollTop;
+        let startX, startY;
+        let offsetX = 0, offsetY = 0;
 
         function createSpiralLayout() {
             const centerX = window.innerWidth / 2;
@@ -82,14 +84,16 @@
             emojis.forEach((emoji, index) => {
                 const angle = index * turnRate;
                 const radius = baseSpacing * (1 + index * growthFactor);
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
+                const x = centerX + radius * Math.cos(angle) + offsetX;
+                const y = centerY + radius * Math.sin(angle) + offsetY;
 
                 const emojiElement = document.createElement('div');
                 emojiElement.className = 'emoji';
                 emojiElement.textContent = emoji;
                 emojiElement.style.left = `${x}px`;
                 emojiElement.style.top = `${y}px`;
+                emojiElement.dataset.baseX = centerX + radius * Math.cos(angle);
+                emojiElement.dataset.baseY = centerY + radius * Math.sin(angle);
                 emojiElement.addEventListener('click', (event) => startZoom(emoji, event));
                 emojiContainer.appendChild(emojiElement);
             });
@@ -140,26 +144,31 @@
         function startDragging(e) {
             if (e.target === emojiContainer) {
                 isDragging = true;
-                startX = e.pageX - emojiContainer.offsetLeft;
-                startY = e.pageY - emojiContainer.offsetTop;
-                scrollLeft = emojiContainer.scrollLeft;
-                scrollTop = emojiContainer.scrollTop;
+                startX = e.clientX - offsetX;
+                startY = e.clientY - offsetY;
             }
         }
 
         function drag(e) {
             if (!isDragging) return;
             e.preventDefault();
-            const x = e.pageX - emojiContainer.offsetLeft;
-            const y = e.pageY - emojiContainer.offsetTop;
-            const walkX = (x - startX) * 2;
-            const walkY = (y - startY) * 2;
-            emojiContainer.scrollLeft = scrollLeft - walkX;
-            emojiContainer.scrollTop = scrollTop - walkY;
+            offsetX = e.clientX - startX;
+            offsetY = e.clientY - startY;
+            updateEmojiPositions();
         }
 
         function stopDragging() {
             isDragging = false;
+        }
+
+        function updateEmojiPositions() {
+            const emojis = document.querySelectorAll('.emoji');
+            emojis.forEach(emoji => {
+                const baseX = parseFloat(emoji.dataset.baseX);
+                const baseY = parseFloat(emoji.dataset.baseY);
+                emoji.style.left = `${baseX + offsetX}px`;
+                emoji.style.top = `${baseY + offsetY}px`;
+            });
         }
     </script>
 </body>
