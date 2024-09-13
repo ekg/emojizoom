@@ -229,6 +229,31 @@
                 emoji.style.top = `${baseY + offsetY}px`;
             });
         }
+
+        // Add event listener for arrow key scrolling
+        document.addEventListener('keydown', handleArrowKeys);
+
+        function handleArrowKeys(e) {
+            const scrollSpeed = 20; // Adjust this value to change scroll speed
+            switch(e.key) {
+                case 'ArrowUp':
+                    offsetY += scrollSpeed;
+                    break;
+                case 'ArrowDown':
+                    offsetY -= scrollSpeed;
+                    break;
+                case 'ArrowLeft':
+                    offsetX += scrollSpeed;
+                    break;
+                case 'ArrowRight':
+                    offsetX -= scrollSpeed;
+                    break;
+                default:
+                    return; // Exit the function for other keys
+            }
+            e.preventDefault(); // Prevent default scrolling behavior
+            updateEmojiPositions();
+        }
     </script>
 </body>
 </html>
